@@ -1,59 +1,117 @@
-import { Component, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, AfterViewInit, ViewChild, ElementRef, OnInit } from '@angular/core';
 import Swiper from 'swiper';
 import { SwiperOptions } from 'swiper/types';
 import { Navigation, Pagination } from 'swiper/modules';
-import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [FormsModule,CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements AfterViewInit {
-  @ViewChild('swiperRef') swiperRef!: ElementRef;
+export class AppComponent implements OnInit, AfterViewInit {
+  @ViewChild('dateSwiperRef') dateSwiperRef!: ElementRef;
+  @ViewChild('prevButton') prevButton!: ElementRef;
+  @ViewChild('nextButton') nextButton!: ElementRef;
 
-  slides = [
-    { title: 'Slide 1', content: 'This is the first slide' },
-    { title: 'Slide 2', content: 'This is the second slide' },
-    { title: 'Slide 3', content: 'This is the third slide' },
-    { title: 'Slide 4', content: 'This is the fourth slide' },
-    { title: 'Slide 11',content: 'This is the first slide' },
-    { title: 'Slide 21',content: 'This is the second slide' },
-    { title: 'Slide 31',ontent: 'This is the third slide' },
-    { title: 'Slide 41',content: 'This is the fourth slide' }
-  ];
+  selectedInputDate: string = '2025-03-18';
+  dateFares: { date: string; price: number; fareType: string }[] = [];
+  selectedDateFare: { date: string; price: number; fareType: string } | null = null;
 
-  swiperConfig: SwiperOptions = {
-    slidesPerView: 1,
+  dateSwiperConfig: SwiperOptions = {
+    slidesPerView: 5,
     spaceBetween: 10,
     navigation: {
-      nextEl: '.swiper-button-next',
-      prevEl: '.swiper-button-prev'
+      nextEl: '.date-swiper-button-next',
+      prevEl: '.date-swiper-button-prev'
     },
     pagination: { clickable: true },
-    loop: true,
     modules: [Navigation, Pagination]
   };
 
-  private swiperInstance!: Swiper;
+  private dateSwiperInstance!: Swiper;
+
+  ngOnInit() {
+    this.updateDateFares(); // Populate dateFares
+    this.selectedDateFare = this.dateFares[6]; // Set initial selection (middle date)
+  }
 
   ngAfterViewInit() {
-    this.initializeSwiper();
+    this.initializeDateSwiper();
   }
 
-  initializeSwiper() {
-    const swiperEl = this.swiperRef.nativeElement;
-    this.swiperInstance = new Swiper(swiperEl, this.swiperConfig);
-    console.log('Swiper initialized:', this.swiperInstance);
-  }
-
-  updateSwiper() {
-    if (this.swiperInstance) {
-      this.swiperInstance.destroy();
+  initializeDateSwiper() {
+    const swiperEl = this.dateSwiperRef.nativeElement;
+    if (this.dateSwiperInstance) {
+      this.dateSwiperInstance.destroy();
     }
-    this.initializeSwiper();
+    this.dateSwiperConfig.navigation = {
+      nextEl: this.nextButton.nativeElement,
+      prevEl: this.prevButton.nativeElement
+    };
+    this.dateSwiperInstance = new Swiper(swiperEl, this.dateSwiperConfig);
+    this.dateSwiperInstance.on('slideChange', () => {
+      const activeIndex = this.dateSwiperInstance.activeIndex;
+      this.selectedDateFare = this.dateFares[activeIndex];
+    });
+    this.dateSwiperInstance.slideTo(6, 0); // Center the selected date
+    console.log('Navigation initialized:', this.dateSwiperInstance.navigation);
+    console.log('Slides per view:', this.dateSwiperInstance.params.slidesPerView);
+    this.dateSwiperInstance.update();
+  }
+
+  updateDateFares() {
+    this.dateFares = this.generateDateFares(this.selectedInputDate);
+    this.selectedDateFare = this.dateFares[6]; // Update selection when dates change
+    if (this.dateSwiperInstance) {
+      this.initializeDateSwiper();
+    }
+  }
+
+  updateDateSwiper() {
+    this.initializeDateSwiper();
+  }
+
+  generateDateFares(selectedDate: string): { date: string; price: number; fareType: string }[] {
+    const dateFares = [];
+    const baseDate = new Date(selectedDate);
+    const baseFares = [
+      { price: 150, fareType: 'Economy' },
+      { price: 160, fareType: 'Economy' },
+      { price: 145, fareType: 'Economy' },
+      { price: 155, fareType: 'Economy' },
+      { price: 170, fareType: 'Economy' },
+      { price: 165, fareType: 'Economy' },
+      { price: 180, fareType: 'Economy' },
+      { price: 175, fareType: 'Economy' },
+      { price: 160, fareType: 'Economy' },
+      { price: 155, fareType: 'Economy' },
+      { price: 170, fareType: 'Economy' },
+      { price: 165, fareType: 'Economy' },
+      { price: 180, fareType: 'Economy' }
+    ];
+
+    for (let i = -6; i <= 6; i++) {
+      const date = new Date(baseDate);
+      date.setDate(baseDate.getDate() + i);
+      const formattedDate = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+      dateFares.push({
+        date: formattedDate,
+        price: baseFares[i + 6].price,
+        fareType: baseFares[i + 6].fareType
+      });
+    }
+    return dateFares;
+  }
+
+  bookFlight() {
+    if (this.selectedDateFare) {
+      alert(`Booking confirmed!\nDate: ${this.selectedDateFare.date}\nFare: ${this.selectedDateFare.fareType} - $${this.selectedDateFare.price}`);
+    } else {
+      alert('Please select a date and fare.');
+    }
   }
 }

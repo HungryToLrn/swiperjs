@@ -1,12 +1,35 @@
-.playground-container {
+.booking-container {
     padding: 20px;
     max-width: 1200px;
     margin: 0 auto;
   }
   
-  .swiper {
+  h1 {
+    text-align: center;
+  }
+  
+  .date-input {
+    margin: 20px 0;
+    text-align: center;
+  
+    label {
+      margin-right: 10px;
+    }
+  
+    input[type="date"] {
+      padding: 5px;
+      font-size: 1em;
+    }
+  }
+  
+  h2 {
+    margin-top: 20px;
+  }
+  
+  .date-swiper {
     width: 100%;
-    height: 400px;
+    height: 200px;
+    margin: 20px 0;
   }
   
   .swiper-slide {
@@ -14,14 +37,29 @@
     justify-content: center;
     align-items: center;
     background: #e0e0e0;
+    border-radius: 8px;
   }
   
-  .slide-content {
+  .date-fare-card {
     text-align: center;
+    padding: 10px;
+    width: 100%;
+  
+    .date {
+      font-size: 1.2em;
+      margin: 0;
+      font-weight: bold;
+    }
+  
+    .fare {
+      font-size: 1em;
+      margin: 5px 0 0;
+      color: #555;
+    }
   }
   
-  .swiper-button-prev,
-  .swiper-button-next {
+  .date-swiper-button-prev,
+  .date-swiper-button-next {
     color: #007aff;
   }
   
@@ -29,8 +67,33 @@
     background: #007aff;
   }
   
-  .controls {
+  .summary {
     margin-top: 20px;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 8px;
+    text-align: center;
+  
+    p {
+      margin: 10px 0;
+    }
+  
+    button {
+      padding: 10px 20px;
+      background: #007aff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+  
+      &:hover {
+        background: #005bb5;
+      }
+    }
+  }
+  
+  .controls {
+    margin-top: 30px;
     padding: 20px;
     background: #f9f9f9;
     border-radius: 8px;
@@ -43,16 +106,11 @@
         margin-bottom: 5px;
       }
   
-      input[type="number"],
-      select {
+      input[type="number"] {
         width: 100%;
         padding: 8px;
         border: 1px solid #ddd;
         border-radius: 4px;
-      }
-  
-      input[type="checkbox"] {
-        margin-left: 10px;
       }
     }
   }
